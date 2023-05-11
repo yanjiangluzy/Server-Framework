@@ -6,6 +6,7 @@
 // 日志系统
 // 主要有三部分：日志器，日志格式以及日志的级别
 // 日志系统可以参考log4cpp
+// 提供一个LoggerWrap 包裹日志器
 namespace zy
 {
     class LogEvent
