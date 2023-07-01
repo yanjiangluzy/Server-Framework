@@ -1,4 +1,6 @@
-#pragma once
+#ifndef _ZY_LOG_H
+#define _ZY_LOG_H
+
 #include <string>
 #include <stdint.h>
 #include <memory>
@@ -7,70 +9,109 @@
 // 主要有三部分：日志器，日志格式以及日志的级别
 // 日志系统可以参考log4cpp
 // 提供一个LoggerWrap 包裹日志器
-namespace zy
+namespace zy_log
 {
+
+    // 日志级别
+    class LogLevel;
+    // 日志格式化
+    class LogFormatter;
+    // 日志输出目标
+    class LogAppender;
+    // 输出到控制台的Appender
+    class StdoutLogAppender : public LogAppender;
+    // 输出到文件的Appender
+    class FileLogAppender : public LogAppender;
+    // 日志器
+    class Logger;
+    // 日志事件
+    class LogEvent;
+    // 日志事件包装器
+    class LogEventWrap;
+    // 日志器管理类
+    class LogManager;
+
+    /////////////////////////////////////////
+
+    
+    // 日志事件
     class LogEvent
     {
     public:
         typedef std::shared_ptr<LogEvent> ptr;
-        LogEvent();
+        LogEvent(std::shared_ptr<Logger> logger, LogLevel::Level level,
+                 const char *file, int32_t line,
+                 uint32_t elapse, , uint32_t thread_id,
+                 uint32_t fiber_id, uint64_t time,
+                 const std::string &thread_name);
+
+        // 需要定义函数用于获取日志事件的属性
+
+        // 返回文件名
+        const char* getFile() { return m_file; }
+
+        // 返回行号
+        int32_t getLine() { return m_line; }
+
+        // 返回耗时
+        uint32_t getElapse() { return m_elapse; }
+
+        // 返回线程ID
+        uint32_t getThreadId() {return m_threadId;}
+
+        // 返回协程ID
+        uint32_t getFiberId() {return m_fiberId;}
+
+        // 返回时间
+        uint64_t getTime() {return m_time;}
+
+        // 返回线程名称
+        std::string getThreadName() { return m_threadName;}
+
+        // 返回日志内容流 --- 返回引用
+        std::stringstream& getSs() { return m_ss;}
+
+        // 返回日志器
+        std::shared_ptr<Logger> getLogger() { return m_logger;}
+
+        // 返回日志等级
+        LogLevel::Level getLevel() { return m_level; }
+
+        // 格式化写入日志内容
+        void format(const char *fmt, ...);
+
+        // 可变参数
+        void format(const char *fmt, va_list al);
 
     private:
-        const char *m_file = nullptr; // 文件名
-        int32_t m_line = 0;           // 行号
-        uint32_t m_elapse;            // 程序运行到现在的毫秒数
-        uint32_t m_threadId = 0;      // 线程id
-        uint32_t m_fiberId = 0;       // 协程id
-        uint64_t m_time = 0;          // 时间戳
-        std::string m_content;        // 具体内容
-    };
-
-    class LogLevel
-    {
-    public:
-        enum Level
-        {
-            DEBUG = 1,
-            INFO = 2,
-            WARING = 3,
-            ERROR = 4,
-            FATAL = 5
-        };
-    };
-
-    // 日志格式器，可以由用户指定不同的格式进行不同的输出
-    class LogFormatter
-    {
-    public:
-        typedef std::shared_ptr<LogFormatter> ptr;
-        std::string format(LogEvent::ptr event); // 对其进行格式化
-    private:
-    };
-
-    // 日志输出地，方便进行不同目的地的输出
-    class LogAppender
-    {
-    public:
-        typedef std::shared_ptr<LogAppender> ptr;
-        void log(LogLevel level, LogEvent::ptr event);
-        virtual ~LogAppender(){};
-    private:
+        /// 文件名
+        const char* m_file = nullptr;
+        /// 行号
+        int32_t m_line = 0;
+        /// 程序启动开始到现在的毫秒数
+        uint32_t m_elapse = 0;
+        /// 线程ID
+        uint32_t m_threadId = 0;
+        /// 协程ID
+        uint32_t m_fiberId = 0;
+        /// 时间戳
+        uint64_t m_time = 0;
+        /// 线程名称
+        std::string m_threadName;
+        /// 日志内容流
+        std::stringstream m_ss;
+        /// 日志器
+        std::shared_ptr<Logger> m_logger;
+        /// 日志等级
         LogLevel::Level m_level;
+        ~LogEvent(){};
     };
 
-    // 日志器
-    class Logger
+
+    // 日志事件包装器
+    class LogEventWrap
     {
-    public:
-        typedef std::shared_ptr<Logger> ptr;
-        Logger(std::string name = "root"){};
 
-        void log(LogLevel::Level level, LogEvent::ptr Event);
-
-    private:
-        std::string m_name;      // 一个日志器的名字，根据这个名字来区分不同的日志器
-        LogLevel::Level m_level; // 一个日志器，对应输出的日志等级
-        LogAppender::ptr;
     };
-
 }
+#endif
