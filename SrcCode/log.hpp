@@ -11,29 +11,6 @@
 // 提供一个LoggerWrap 包裹日志器
 namespace zy_log
 {
-
-    // 日志级别
-    class LogLevel;
-    // 日志格式化
-    class LogFormatter;
-    // 日志输出目标
-    class LogAppender;
-    // 输出到控制台的Appender
-    class StdoutLogAppender : public LogAppender;
-    // 输出到文件的Appender
-    class FileLogAppender : public LogAppender;
-    // 日志器
-    class Logger;
-    // 日志事件
-    class LogEvent;
-    // 日志事件包装器
-    class LogEventWrap;
-    // 日志器管理类
-    class LogManager;
-
-    /////////////////////////////////////////
-
-    
     // 日志事件
     class LogEvent
     {
@@ -48,7 +25,7 @@ namespace zy_log
         // 需要定义函数用于获取日志事件的属性
 
         // 返回文件名
-        const char* getFile() { return m_file; }
+        const char *getFile() { return m_file; }
 
         // 返回行号
         int32_t getLine() { return m_line; }
@@ -57,22 +34,22 @@ namespace zy_log
         uint32_t getElapse() { return m_elapse; }
 
         // 返回线程ID
-        uint32_t getThreadId() {return m_threadId;}
+        uint32_t getThreadId() { return m_threadId; }
 
         // 返回协程ID
-        uint32_t getFiberId() {return m_fiberId;}
+        uint32_t getFiberId() { return m_fiberId; }
 
         // 返回时间
-        uint64_t getTime() {return m_time;}
+        uint64_t getTime() { return m_time; }
 
         // 返回线程名称
-        std::string getThreadName() { return m_threadName;}
+        std::string getThreadName() { return m_threadName; }
 
         // 返回日志内容流 --- 返回引用
-        std::stringstream& getSs() { return m_ss;}
+        std::stringstream &getSs() { return m_ss; }
 
         // 返回日志器
-        std::shared_ptr<Logger> getLogger() { return m_logger;}
+        std::shared_ptr<Logger> getLogger() { return m_logger; }
 
         // 返回日志等级
         LogLevel::Level getLevel() { return m_level; }
@@ -85,7 +62,7 @@ namespace zy_log
 
     private:
         /// 文件名
-        const char* m_file = nullptr;
+        const char *m_file = nullptr;
         /// 行号
         int32_t m_line = 0;
         /// 程序启动开始到现在的毫秒数
@@ -107,11 +84,40 @@ namespace zy_log
         ~LogEvent(){};
     };
 
-
     // 日志事件包装器
     class LogEventWrap
     {
+    public:
+        LogEventWrap() {}
 
+        // 获取日志事件
+        LogEvent::ptr getLogEvent() const { return m_logEvent; }
+
+        // 获取日志内容流
+        std::stringstream getSs();
+        ~LogEventWrap();
+
+    private:
+        LogEvent::ptr m_logEvent;
+    };
+
+    // 日志格式器
+    class LogFormatter
+    {
+    public:
+        typedef std::shared_ptr<LogFormatter> ptr;
+
+        LogFormatter(const std::string pattern); // pattern指定输出的格式
+    };
+
+    // 日志器
+    class Logger
+    {
+    };
+
+    // 日志等级
+    class LogLevel
+    {
     };
 }
 #endif
