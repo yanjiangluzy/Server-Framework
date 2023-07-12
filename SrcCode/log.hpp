@@ -4,9 +4,11 @@
 #include <string>
 #include <memory>
 #include <iostream>
+#include <vector>
 #include <list>
 #include <sstream>
 #include <fstream>
+#include <tuple>
 
 namespace zy_log
 {
@@ -33,23 +35,43 @@ namespace zy_log
     public:
         enum Level
         {
+            UNKNOWN = 0,
             DEBUG = 1,
             INFO = 2,
             WARNING = 3,
             ERROR = 4,
             FATAL = 5
         };
+
+        // 给定由日志等级到文本输出的转换方法
+        static const char* ToString(LogLevel::Level level);
     };
 
     // 日志格式器
+    // 接收格式类似 %m %p %s %n等等
     class LogFormatter
     {
     public:
         typedef std::shared_ptr<LogFormatter> ptr;
+
+        LogFormatter(std::string pattern);
         // 对传送过来的event格式化后返回
         std::string format(LogEvent::ptr event);
+    public:
+        // 对接收到的格式进行解析
+        class FormatItem
+        {
+        public:
+            typedef std::shared_ptr<FormatItem> ptr;
+            virtual ~FormatItem() {}
+            virtual std::string format(LogEvent::ptr event) = 0;
+        };
 
+        void init();                            // 对m_pattern做解析，将解析出来的格式放入m_items中
     private:
+        std::vector<FormatItem::ptr> m_items;   // 指定存储每一个格式 
+        std::string m_pattern;                  // 指定格式器的格式, 构造函数中指定
+        bool m_error;                           // 给定格式是否出错
     };
 
     // 日志输出地
@@ -92,6 +114,7 @@ namespace zy_log
         void delAppender(LogAppender::ptr appender);
 
         LogLevel::Level getLevel() const { return m_level; }
+        std::string getName() const { return m_name; }
 
         void setLevel(LogLevel::Level val) { m_level = val; }
 
@@ -109,6 +132,7 @@ namespace zy_log
         void log(LogLevel::Level level, LogEvent::ptr event) override;
 
     private:
+        
     };
 
     // 输出到文件的Appender
