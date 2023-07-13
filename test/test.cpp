@@ -1,19 +1,18 @@
-#include <iostream>
-#include <memory>
-// 测试
+#include <stdio.h>
+#include <time.h>
 
-class LogEvent
+int main()
 {
-public:
-    typedef std::shared_ptr<LogEvent> ptr;
-    LogEvent();
+    time_t rawtime;
+    struct tm *info;
+    char buffer[80];
 
-private:
-    const char* m_file = nullptr;
-    int32_t m_line = 0;
-    uint32_t m_elapse = 0;
-    uint32_t m_threadId = 0;
-    uint32_t m_fiberId = 0;
-    uint64_t m_time = 0;
-    std::string m_content;     // string一般和指针的大小一样，都是4 or 8字节
-}; 
+    time(&rawtime);
+
+    info = localtime(&rawtime);
+
+    strftime(buffer, 80, "", info);
+    printf("格式化的日期 & 时间 : |%s|\n", buffer);
+
+    return (0);
+}
