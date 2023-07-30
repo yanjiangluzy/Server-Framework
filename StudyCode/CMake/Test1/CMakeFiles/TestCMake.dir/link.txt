@@ -1,0 +1,1 @@
+/usr/bin/c++       CMakeFiles/TestCMake.dir/home/zy/Server-Framework/StudyCode/CMake/TestCMake.cc.o  -o TestCMake -rdynamic 
