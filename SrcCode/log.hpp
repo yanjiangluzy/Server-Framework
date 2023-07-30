@@ -9,6 +9,7 @@
 #include <sstream>
 #include <fstream>
 #include <tuple>
+#include <ctime>
 
 namespace zy_log
 {
@@ -19,6 +20,14 @@ namespace zy_log
         typedef std::shared_ptr<LogEvent> ptr;
         LogEvent();
 
+        const char* getFile() const { return m_file; }
+        int32_t getLine() const { return m_line; }
+        uint32_t getElapse() const { return m_elapse; }
+        uint32_t getThreadId() const { return m_threadId; }
+        uint32_t getFiberId() const { return m_fiberId; }
+        uint64_t getTime() const { return m_time; }
+        std::string getContent() const { return m_content; }
+
     private:
         const char *m_file = nullptr; // 文件名
         int32_t m_line = 0;           // 行号
@@ -27,6 +36,8 @@ namespace zy_log
         uint32_t m_fiberId = 0;       // 协程id
         uint64_t m_time = 0;          // 时间戳
         std::string m_content;        // 正文
+
+        LogLevel::Level m_level;      // 日志等级
     };
 
     // 日志等级
@@ -56,7 +67,7 @@ namespace zy_log
 
         LogFormatter(std::string pattern);
         // 对传送过来的event格式化后返回
-        std::string format(LogEvent::ptr event);
+        std::string format(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event);
     public:
         // 对接收到的格式进行解析
         class FormatItem
@@ -64,7 +75,7 @@ namespace zy_log
         public:
             typedef std::shared_ptr<FormatItem> ptr;
             virtual ~FormatItem() {}
-            virtual std::string format(LogEvent::ptr event) = 0;
+            virtual void format(std::ostream& os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event);
         };
 
         void init();                            // 对m_pattern做解析，将解析出来的格式放入m_items中
