@@ -1,18 +1,31 @@
-#include <stdio.h>
-#include <time.h>
+#include <iostream>
+#include <cstring>
 
-int main()
+
+using std::cout;
+using std::endl;
+
+
+// 包含日志等级
+class LogLevel
 {
-    time_t rawtime;
-    struct tm *info;
-    char buffer[80];
+public:
+    enum Level
+    {   
+        UNKNOW = 0,
+        NORMAL = 1
+        DEBUG = 2,
+        WARNING = 3,
+        ERROR = 4,
+        FATAL = 5
+    };
+private:
+};
 
-    time(&rawtime);
-
-    info = localtime(&rawtime);
-
-    strftime(buffer, 80, "", info);
-    printf("格式化的日期 & 时间 : |%s|\n", buffer);
-
-    return (0);
-}
+// 日志过滤器
+class LogFilter
+{
+public:
+    LogFilter()
+private:
+};
